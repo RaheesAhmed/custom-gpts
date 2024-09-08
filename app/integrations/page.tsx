@@ -1,10 +1,12 @@
 "use client";
 
 import Integrations from "@/components/Integrations";
-
+import { Suspense } from 'react'
 const IntegrationsPage = () => {
     return (
-        <Integrations />
+        <Suspense fallback={<div>Loading...</div>}>
+            <Integrations />
+        </Suspense>
     )
 }
 
