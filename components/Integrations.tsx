@@ -30,7 +30,12 @@ const Integrations = () => {
             try {
                 const response = await fetch('/api/google/analytics');
                 const data = await response.json();
-                window.location.href = data.url;
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    console.error('No URL returned from the server');
+                }
+
             } catch (error) {
                 console.error('Error connecting to Google Analytics:', error);
             }

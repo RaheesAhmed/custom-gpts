@@ -4,23 +4,23 @@ import { google } from 'googleapis';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.NEXTAUTH_URL}/api/google/analytics`
+  `https://custom-gpts.vercel.app/api/auth/callback/google/analytics`
 );
 
 export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const code = searchParams.get('code');
+
+  if (!code) {
+    return NextResponse.json({ error: 'No code provided' }, { status: 400 });
+  }
+
   try {
-    const scopes = [
-      'https://www.googleapis.com/auth/analytics.readonly',
-    ];
-
-    const url = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: scopes,
-    });
-
-    return NextResponse.json({ url });
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+    return NextResponse.json({ success: true, tokens });
   } catch (error) {
-    console.error('Error generating Google Analytics auth URL:', error);
-    return NextResponse.json({ error: 'Failed to generate auth URL' }, { status: 500 });
+    console.error('Error exchanging code for tokens:', error);
+    return NextResponse.json({ error: 'Failed to exchange code for tokens' }, { status: 500 });
   }
 }
