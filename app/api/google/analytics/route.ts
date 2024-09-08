@@ -4,7 +4,7 @@ import { google } from 'googleapis';
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `https://custom-gpts.vercel.app/api/auth/callback/google/analytics`
+  `${process.env.NEXTAUTH_URL}/api/auth/callback/google/analytics`
 );
 
 export async function GET(req: NextRequest) {
@@ -18,9 +18,10 @@ export async function GET(req: NextRequest) {
   try {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-    return NextResponse.json({ success: true, tokens });
+    return NextResponse.redirect(new URL('/?auth=success', process.env.NEXTAUTH_URL));
   } catch (error) {
     console.error('Error exchanging code for tokens:', error);
-    return NextResponse.json({ error: 'Failed to exchange code for tokens' }, { status: 500 });
+    // Redirect to the home page with an error parameter
+    return NextResponse.redirect(new URL('/?error=auth_failed', process.env.NEXTAUTH_URL));
   }
 }
