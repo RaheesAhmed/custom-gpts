@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +9,7 @@ import { Database, Linkedin, Facebook, BarChart3, PieChart, Search, Ghost, Loade
 import SideBar from '@/components/SideBar'
 import DashboardHeader from '@/components/DashboardHeader'
 import { useSearchParams } from 'next/navigation'
-
+import { Suspense } from 'react'
 
 const providers = [
     { name: 'BigQuery', icon: Database, color: 'bg-blue-500' },
