@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch"
 import { Database, Linkedin, Facebook, BarChart3, PieChart, Search, Ghost, Loader2 } from 'lucide-react'
 import SideBar from '@/components/SideBar'
 import DashboardHeader from '@/components/DashboardHeader'
+import { useSearchParams } from 'next/navigation'
+
 
 const providers = [
     { name: 'BigQuery', icon: Database, color: 'bg-blue-500' },
@@ -23,6 +25,21 @@ const Integrations = () => {
     const [connectedProviders, setConnectedProviders] = useState<Record<string, boolean>>({})
     const [activeProviders, setActiveProviders] = useState<Record<string, boolean>>({})
     const [connectingProvider, setConnectingProvider] = useState<string | null>(null)
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const authStatus = searchParams.get('auth')
+        const error = searchParams.get('error')
+
+        if (authStatus === 'success') {
+            setConnectedProviders(prev => ({ ...prev, 'Google Analytics': true }))
+            setActiveProviders(prev => ({ ...prev, 'Google Analytics': true }))
+            // You might want to show a success message here
+        } else if (error) {
+            console.error('Authentication failed:', error)
+            // You might want to show an error message here
+        }
+    }, [searchParams])
 
     const handleConnect = async (providerName: string) => {
         setConnectingProvider(providerName)
@@ -35,12 +52,11 @@ const Integrations = () => {
                 } else {
                     console.error('No URL returned from the server');
                 }
-
             } catch (error) {
                 console.error('Error connecting to Google Analytics:', error);
             }
         } else {
-            // Simulate API call
+            // Simulate API call for other providers
             await new Promise(resolve => setTimeout(resolve, 1000));
             setConnectedProviders(prev => ({ ...prev, [providerName]: true }))
             setActiveProviders(prev => ({ ...prev, [providerName]: true }))

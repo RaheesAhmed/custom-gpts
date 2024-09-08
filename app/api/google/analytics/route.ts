@@ -8,20 +8,19 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const code = searchParams.get('code');
-
-  if (!code) {
-    return NextResponse.json({ error: 'No code provided' }, { status: 400 });
-  }
-
   try {
-    const { tokens } = await oauth2Client.getToken(code);
-    oauth2Client.setCredentials(tokens);
-    return NextResponse.redirect(new URL('/?auth=success', process.env.NEXTAUTH_URL));
+    const scopes = [
+      'https://www.googleapis.com/auth/analytics.readonly',
+    ];
+
+    const url = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: scopes,
+    });
+
+    return NextResponse.json({ url });
   } catch (error) {
-    console.error('Error exchanging code for tokens:', error);
-    // Redirect to the home page with an error parameter
-    return NextResponse.redirect(new URL('/?error=auth_failed', process.env.NEXTAUTH_URL));
+    console.error('Error generating Google Analytics auth URL:', error);
+    return NextResponse.json({ error: 'Failed to generate auth URL' }, { status: 500 });
   }
 }
