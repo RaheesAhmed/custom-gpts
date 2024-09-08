@@ -14,6 +14,15 @@ import SideBar from '@/components/SideBar'
 import DashboardHeader from '@/components/DashboardHeader'
 import { useTheme } from "next-themes"
 
+
+interface SettingsProps {
+    theme: string
+    setTheme: (theme: string) => void
+    notifications: boolean
+    setNotifications: (notifications: boolean) => void
+}
+
+
 const Settings = () => {
     const { theme, setTheme } = useTheme()
     const [notifications, setNotifications] = useState(true)
